@@ -1,0 +1,3 @@
+GetSlangDefinition get definition for {word}
+GetSlangDefinition define {word}
+GetSlangDefinition tell me slang definition for {word}

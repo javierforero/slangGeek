@@ -3,9 +3,6 @@
  */
 var APP_ID = "amzn1.echo-sdk-ams.app.784194b1-c788-4f54-a4eb-0f019cea39a7";
 
-/**
- * The AlexaSkill prototype and helper functions
- */
 var AlexaSkill = require('./AlexaSkill');
 
 
@@ -17,23 +14,8 @@ var SlangGeek = function () {
 SlangGeek.prototype = Object.create(AlexaSkill.prototype);
 SlangGeek.prototype.constructor = SlangGeek;
 
-SlangGeek.prototype.eventHandlers.onSessionStarted = function (sessionStartedRequest, session) {
-    console.log("SlangGeek onSessionStarted requestId: " + sessionStartedRequest.requestId
-        + ", sessionId: " + session.sessionId);
-    // any initialization logic goes here
-};
-
 SlangGeek.prototype.eventHandlers.onLaunch = function (launchRequest, session, response) {
     console.log("SlangGeek onLaunch requestId: " + launchRequest.requestId + ", sessionId: " + session.sessionId);
-};
-
-/**
- * Overridden to show that a subclass can override this function to teardown session state.
- */
-SlangGeek.prototype.eventHandlers.onSessionEnded = function (sessionEndedRequest, session) {
-    console.log("SlangGeek onSessionEnded requestId: " + sessionEndedRequest.requestId
-        + ", sessionId: " + session.sessionId);
-    // any cleanup logic goes here
 };
 
 SlangGeek.prototype.intentHandlers = {
@@ -41,7 +23,6 @@ SlangGeek.prototype.intentHandlers = {
 
       getDefinition(intent.slots.Word.value, function(definition){
         var speechOutput = definition;
-        console.log(definition);
         response.tell(speechOutput);
       });
 
@@ -61,7 +42,7 @@ SlangGeek.prototype.intentHandlers = {
     }
 };
 
-function getDefinition(word, onSuccess) {
+function getDefinition(word, onResponse) {
   var http = require('http');
 
   var options = {
@@ -72,17 +53,16 @@ function getDefinition(word, onSuccess) {
   callback = function(response) {
     var str = '';
 
-    //another chunk of data has been recieved, so append it to `str`
     response.on('data', function (chunk) {
       str += chunk;
     });
-    //the whole response has been received, so we just print it out here
+
     response.on('end', function () {
         try {
-          onSuccess(JSON.parse(str).list[0].definition);
+          onResponse("The definition for " + word + " is: " + JSON.parse(str).list[0].definition);
         }
         catch(error) {
-          onSuccess("Sorry, there's no definition for that word. Try again.");
+          onResponse("Sorry, there's no definition for that word. Try again.");
          }
     });
   }
@@ -91,9 +71,8 @@ function getDefinition(word, onSuccess) {
 };
 
 
-// Create the handler that responds to the Alexa Request.
 exports.handler = function (event, context) {
-    // Create an instance of the SlangGeek skill.
+
     var slangGeek = new SlangGeek();
     slangGeek.execute(event, context);
 };

@@ -5,6 +5,40 @@ var APP_ID = "amzn1.echo-sdk-ams.app.784194b1-c788-4f54-a4eb-0f019cea39a7";
 
 var AlexaSkill = require('./AlexaSkill');
 
+var express = require('express');
+
+var request = require('request');
+
+var app = express();
+
+var GA_TRACKING_ID = 'UA-77510808-1';
+
+var sessionId;
+
+function trackEvent(category, action, label, cb) {
+  var data = {
+    v: '1',
+    tid: GA_TRACKING_ID,
+    cid: sessionId,
+    t: 'event',
+    ec: category,
+    ea: action,
+    el: label
+  };
+
+  request.post(
+    'http://www.google-analytics.com/collect', {
+      form: data
+    },
+    function(err, response) {
+      if (err) { return cb(err); }
+      if (response.statusCode !== 200) {
+        return cb(new Error('Tracking failed'));
+      }
+      cb();
+    }
+  );
+};
 
 var SlangGeek = function () {
     AlexaSkill.call(this, APP_ID);
@@ -15,11 +49,24 @@ SlangGeek.prototype = Object.create(AlexaSkill.prototype);
 SlangGeek.prototype.constructor = SlangGeek;
 
 SlangGeek.prototype.eventHandlers.onLaunch = function (launchRequest, session, response) {
+
     console.log("SlangGeek onLaunch requestId: " + launchRequest.requestId + ", sessionId: " + session.sessionId);
 };
 
 SlangGeek.prototype.intentHandlers = {
+
     "GetSlangDefinition": function (intent, session, response) {
+      sessionId = session.sessionId;
+      trackEvent(
+        'Intent',
+        'GetSlangDefinition',
+        intent.slots.Word.value,
+        function(err) {
+          if (err) {
+            return next(err);
+          }
+          return 200;
+        });
 
       getDefinition(intent.slots.Word.value, function(definition){
         var speechOutput = definition;

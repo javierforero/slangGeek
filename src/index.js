@@ -5,17 +5,20 @@ var APP_ID = "amzn1.echo-sdk-ams.app.784194b1-c788-4f54-a4eb-0f019cea39a7";
 
 var AlexaSkill = require('./AlexaSkill');
 
-var express = require('express');
-
-var request = require('request');
-
-var app = express();
-
 var GA_TRACKING_ID = 'UA-77510808-1';
 
 var sessionId;
 
-function trackEvent(category, action, label, cb) {
+var express = require('node_modules/express');
+
+var request = require('node_modules/request');
+
+var app = express();
+
+
+
+function trackEvent(sessionId, category, action, label, value, cb) {
+
   var data = {
     v: '1',
     tid: GA_TRACKING_ID,
@@ -58,15 +61,16 @@ SlangGeek.prototype.intentHandlers = {
     "GetSlangDefinition": function (intent, session, response) {
       sessionId = session.sessionId;
       trackEvent(
+        sessionId,
         'Intent',
         'GetSlangDefinition',
         intent.slots.Word.value,
         function(err) {
           if (err) {
-            return next(err);
+            return err;
           }
           return 200;
-        });
+      });
 
       getDefinition(intent.slots.Word.value, function(definition){
         var speechOutput = definition;

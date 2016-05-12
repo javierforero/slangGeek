@@ -17,7 +17,7 @@ var app = express();
 
 
 
-function trackEvent(sessionId, category, action, label, value, cb) {
+function trackEvent(sessionId, category, action, label, cb) {
 
   var data = {
     v: '1',
@@ -54,6 +54,8 @@ SlangGeek.prototype.constructor = SlangGeek;
 SlangGeek.prototype.eventHandlers.onLaunch = function (launchRequest, session, response) {
 
     console.log("SlangGeek onLaunch requestId: " + launchRequest.requestId + ", sessionId: " + session.sessionId);
+    var speechOutput = "Hi There. I am a slang geek. Just ask me to define a word and I'll be sure to search in my database and give you a good laugh.";
+    response.ask(speechOutput);
 };
 
 SlangGeek.prototype.intentHandlers = {
@@ -67,9 +69,10 @@ SlangGeek.prototype.intentHandlers = {
         intent.slots.Word.value,
         function(err) {
           if (err) {
-            return err;
-          }
-          return 200;
+            return next(err);
+          } else {
+         console.log(200);
+         }
       });
 
       getDefinition(intent.slots.Word.value, function(definition){

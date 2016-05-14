@@ -1,3 +1,6 @@
-GetSlangDefinition get definition for {word}
-GetSlangDefinition define {word}
-GetSlangDefinition tell me slang definition for {word}
+GetSlangDefinition give me the definition of {slot value|Word}
+GetSlangDefinition get the definition of {slot value|Word}
+GetSlangDefinition define {slot value|Word}
+GetSlangDefinition tell me the slang definition of {slot value|Word}
+GetSlangDefinition tell me the definition of {slot value|Word}
+GetSlangDefinition what is the definition of {slot value|Word}

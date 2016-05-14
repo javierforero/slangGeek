@@ -9,9 +9,9 @@ var GA_TRACKING_ID = 'UA-77510808-1';
 
 var sessionId;
 
-var express = require('node_modules/express');
+var express = require('express');
 
-var request = require('node_modules/request');
+var request = require('request');
 
 var app = express();
 
